@@ -6,7 +6,8 @@
 main(){
   int input=411;
   printf(input);
-  printf("Hello world!!")
-  
+  printf("Hello world!!");
+  printf("jihye is stupid");
+
   return 0;
 }
