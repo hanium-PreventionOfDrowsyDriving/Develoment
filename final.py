@@ -57,25 +57,28 @@ rospy.Subscriber('ar_pose_marker', AlvarMarkers, callback)
 motor_pub = rospy.Publisher('xycar_motor', xycar_motor, queue_size =1 )
 
 #=========================================
-# 
+# 자동차를 후진시키는 함수
+# 후진 방향 조정을 위해 angle 값이 양수일 경우, 음수일 경우에 따라 조건이 나뉨. 
+# 모터제어 토픽을 발행하며, speed를 -15로 조정함. 
 #=========================================
+def reverse_car(angle, tim):  
+    global motor_msg, motor_pub  # 조향각 값과 속도값 수정을 위한 전역변수 지정
 
-def reverse_car(angle, tim): #자동차를 후진시키는 함수, 속도를 -10으로 세팅하여 모터제어 토픽을 발행한다.
-    global motor_msg, motor_pub
-
-    if angle > 0:
+    #차량 진입 방향이 오른쪽일 경우, 반대방향 회전을 위한 조건문
+    if angle > 0: 
         for tim in range(tim): 
-            motor_msg.angle = angle
-            motor_msg.speed = -15
-            motor_pub.publish(motor_msg)
-            time.sleep(0.1)
+            motor_msg.angle = angle      # motor의 angle값 지정
+            motor_msg.speed = -15        # motor의 speed값 지정
+            motor_pub.publish(motor_msg) # 변화된 모터의 angle값, speed값 토픽 재발행 
+            time.sleep(0.1) # 0.1초 일시 정지
 
+    #차량 진입 방향이 왼쪽일 경우, 반대방향 회전을 위한 조건문
     else:   
         for tim in range(tim): 
-            motor_msg.angle = -angle
-            motor_msg.speed = -15
-            motor_pub.publish(motor_msg)
-            time.sleep(0.1)
+            motor_msg.angle = -angle     # motor의 angle값 지정
+            motor_msg.speed = -15        # motor의 speed값 지정
+            motor_pub.publish(motor_msg) # 변화된 모터의 angle값, speed값 토픽 재발행 
+            time.sleep(0.1) # 0.1초 일시 정지
 
 #=========================================
 # 메인 루프 
@@ -131,47 +134,45 @@ while not rospy.is_shutdown():
     cv2.imshow('AR Tag Position', img)
     cv2.waitKey(1)
 
-    deg=0 
-    if arData["DY"]:
-       deg = math.degrees(math.atan(arData["DX"]/arData["DY"]))
-    angle = 0 
+    
+    # DX, DY 값을 이용하여 목표지점을 향해 angle각을 조정하며 접근
+    deg=0  # arData["DY"]의 데이터값이 0인 경우를 위를 위한 기본값 지정
 
-    if abs(deg) > 20:
-       angle = ( yaw + deg ) * 1.5
+    if arData["DY"]: 
+       deg = math.degrees(math.atan(arData["DX"]/arData["DY"])) # (x축)÷(y축)의 아크탄젠트값을 deg에 저장함.
+    angle = 0 # 목표 지점을 향해 알맞은 각도로 전진하고 있을 경우, angle 값을 0으로 지정하여 직진
 
+    if abs(deg) > 20:                # deg 계산값의 절닷값이 20 이상일 경우 
+       angle = ( yaw + deg ) * 1.5   # 회전반경의 값과 deg을 더한 값에 1.5를 곱하여 angle 값으로 지정함
+    else:                            #위의 조건이 만족하지 않는 경우
+       if yaw < 0:                   # 회전반경이 0 미만일 때
+          angle = 50                 # angle값을 50으로 지정, 오른쪽으로 회전
+       else:                         # 회전반경이 0 이상일 때
+          angle = -50                # angle값을 -50으로 지정, 왼쪽으로 회전
+
+    # 정확도 향상을 위해 목표 지점에 가까워질 수록 속도를 저하시키며 접근
+    if(arData["DY"] > 300):    # 목표 지점에 대한 Y축 거리가 300 이상일 경우
+       speed = 50              # speed값을 50으로 지정
+    elif(arData["DY"] > 200):  # 목표 지점에 대한 Y축 거리가 200 이상일 경우
+       speed = 30              # speed값을 30으로 지정
+    elif(arData["DY"] > 100):  # 목표 지점에 대한 Y축 거리가 100 이상일 경우
+       speed = 20              # speed값을 20으로 지정
+
+    # 목표 지점에 접근하였으나 주차 각도가 적절하지 않을 경우, 후진 후 재접근
+    elif(arData["DY"] > 70 and arData["DY"] < 100):     # 목표 지점에 대한 Y축 거리가 70이상 100 미만일 경우
+       if ( yaw > 10 or abs(arData["DX"] > 100)):       # 회전반경 값이 10 이상이거나 X축의 절댓값이 100 이상일 경우
+           reverse_car((-1)*angle, 20)                  # reverse_car 함수 접근, 후진 시 중앙에 가까운 궤도를 만들기 위해 현재 angle값에 -1을 곱하여 양수를 음수로 변환.
+       elif ( yaw < -10 or abs(arData["DX"] > 100)):    # 회전반경 값이 -10 이하이거나 X축의 절댓값이 100 이상일 경우
+           reverse_car((-1)*angle, 20)                  # reverse_car 함수 접근, 후진 시 중앙에 가까운 궤도를 만들기 위해 현재 angle값에 -1을 곱하여 음수를 양수로 변환.
+ 
+    # 목표 지점에 접근하였을 경우 종료
     else:
-       if yaw < 0:
-          angle = 50
-       else: 
-          angle = -50
+       speed = 0 # speed값을 0으로 지정
 
-    if(arData["DY"] > 300):
-       speed = 50
-    elif(arData["DY"] > 200):
-       speed = 30
-    elif(arData["DY"] > 100):
-       speed = 20
-    elif(arData["DY"] > 70 and arData["DY"] < 100):     
-       if ( yaw > 10 or abs(arData["DX"] > 100)):
-           reverse_car((-1)*angle, 20)
-       elif ( yaw < -10 or abs(arData["DX"] > 100)):
-           reverse_car((-1)*angle, 20)
-    else:
-       speed = 0
-
-
-
-    # 핸들 조향각 angle값 설정하기
-    #angle = 50
-		
-    # 차량의 속도 speed값 설정하기
-    #speed = 5		
-     
     # 조향각값과 속도값을 넣어 모터 토픽을 발행하기
     motor_msg.angle = angle
     motor_msg.speed = speed
     motor_pub.publish(motor_msg)
-
 
 # while 루프가 끝나면 열린 윈도우 모두 닫고 깔끔하게 종료하기
 cv2.destroyAllWindows()
