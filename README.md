@@ -10,6 +10,7 @@ pi_drowsiness_detection.py
 /models
 - opencv : haarcascade_frontalface_default.xml
 - dlib : shape_predictor_68_face_landmarks.dat
+-> 랜드마크는 구글 검색을 통해서
 
 ## 필수 패키지 설치
 - install_library.txt 참고
