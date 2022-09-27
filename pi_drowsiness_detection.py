@@ -79,7 +79,7 @@ ALARM_ON = False
 
 # 얼굴 감지를 위한 Haar cascade 로드
 # dlib(HOG)의 내장 감지기를 생성
-print("[INFO] loading facial landmark predictor...")
+print("[INFO] 랜드마크 감지기 로딩중..")
 detector = cv2.CascadeClassifier(args["cascade"])
 
 # shap_predictor 파일에 대한 경로 
@@ -94,7 +94,7 @@ predictor = dlib.shape_predictor(args["shape_predictor"])
 
 
 # video stream 초기화 
-print("[INFO] starting video stream thread...")
+print("[INFO] 비디오 시작 중..")
 vs = VideoStream(src=0).start()
 
 # 파이카메라 용
@@ -166,7 +166,7 @@ while True:
 						
 				# 프레임 위에 알람 표시
 				
-				cv2.putText(frame, "DROWSINESS ALERT!", (10, 30),
+				cv2.putText(frame, "졸음감지!!", (10, 30),
 					cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 				
 		# # 그렇지 않으면, 눈 종횡비가 깜박임 임계 값보다 낮지 않으므로 카운터 및 경보음을 재설정
