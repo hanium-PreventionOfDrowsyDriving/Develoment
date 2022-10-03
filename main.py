@@ -19,8 +19,7 @@ notice.start()
 try:
   playsound.playsound(quiz.soundpath())
 except:
-  while True:
-    playsound.playsound(quiz.soundpath())
+  os.execl(sys.executable, sys.executable, *sys.argv)
 
 recognizer = sr.Recognizer()
 mic = sr.Microphone()
