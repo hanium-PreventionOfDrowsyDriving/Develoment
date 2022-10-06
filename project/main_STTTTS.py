@@ -35,7 +35,7 @@ playsound.playsound(quiz.soundpath())
 
 recognizer = sr.Recognizer()
 mic = sr.Microphone()
-'''
+
 notice.inputreq()
 while True:
   # audio = stt.recording()
@@ -61,4 +61,4 @@ while True:
   if end == True:
     break
   else:
-    notice.incorrect()'''
+    notice.incorrect()
