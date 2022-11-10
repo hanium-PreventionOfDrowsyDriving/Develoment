@@ -9,10 +9,11 @@ workon cv
 if occur error -> bash: workon: command not found 
 (1). $ source ~/.profile
 (2) $ virtualenv venv
+(3) $ workon cv
 
 
 # cmd창 디렉토리 변경 -> 파이썬 코드 파일이 다른 디렉토리에 저정되어있기에
-(1) $ cd Documents
+(1) $ cd Desktop/Hanium/project
 (2) $ pwd
 
 **********************************************************************
@@ -39,7 +40,8 @@ https://pyimagesearch.com/2017/05/01/install-dlib-raspberry-pi/
 
 **********************************************************************
 3. 파일 실행
-python [실행파일명].py --fcascade haarcascade_frontalface_default.xml --ecascade haarcascade_eye.xml --shape-predictor shape_predictor_68_face_landmarks.dat
+python main.py --haarcascade haarcascade_frontalface_default.xml --shape-predictor shape_predictor_68_face_landmarks.dat
+
 
 **********************************************************************
 4. 파일 설명

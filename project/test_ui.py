@@ -1,10 +1,10 @@
 # python test_ui.py --fcascade haarcascade_frontalface_default.xml --ecascade haarcascade_eye.xml --shape-predictor shape_predictor_68_face_landmarks.dat
 
 # 1.1 눈부분 상자로 감지
-# 1.2 w_count -> 졸음 경고 카운트
+# 1.2 sleep_counter -> 졸음 경고 카운트
 # 1.3 졸음감지 여부 bool
 # 1.4 경고창 위치조정 : 사용자 머리 위
-# 1.5 w_count 졸음경고 카운트가 3 이상이면 경고음 발생 텍스트 출력
+# 1.5 sleep_counter 졸음경고 카운트가 3 이상이면 경고음 발생 텍스트 출력
 
 
 # 필요한 라이브러리 가져오기
@@ -19,7 +19,6 @@ import cv2  # 얼굴 객체 인식
 import RPi.GPIO as GPIO
 import pyfirmata  # 아두이노
 #from ArduinoSerial import Ultra
-import ArduinoSerial
 import os, time
 
 '''board=pyfirmata.Arduino('/dev/ttyUSB0')
@@ -67,14 +66,14 @@ args = vars(parser.parse_args())
 
 # 눈의 종횡비가 깜박임을 나타내는 상수와
 # 졸음으로 간주하기 위해 눈의 종횡비 임계값 보다 낮아야 하는 연속 프레임 수에 대한 상수 정의
-EAR_THRESH = 0.23  # 눈 종횡비 임계치 값
-EAR_FRAMES = 14  # 프레임수, 값이 높을수록 감지가 늦음.
+EAR_THRESH = 0.28  # 눈 종횡비 임계치 값
+EAR_FRAMES = 12  # 프레임수, 값이 높을수록 감지가 늦음.
 
 # 프레임 카운터 초기화, 경보음 발생 여부를 나타내는데 사용되는 Bool
 COUNTER = 0
 ALARM_ON = False
 # //////////////////////////////////////////////////////////////////////////////1.2
-w_counter = 0 # 졸 때마다 경고 카운트
+sleep_counter = 0 # 졸 때마다 경고 카운트
 # 졸음 감지 여부 Bool형 ////////////////////////////////////////////////////// 1.3
 EYE_DROWSINESS = False 
 
@@ -102,7 +101,7 @@ vs = VideoStream(src=0).start()
 # 카메라 센서가 워밍업할 수 있도록 1초 동안 절전 모드
 time.sleep(1.0)
 
-
+'''
 # ------------------------------------car-------------------------------------------
 def region_of_interest(img, vertices):
     mask = np.zeros_like(img)
@@ -284,18 +283,19 @@ def process(image):
 
     image_with_lines = cv2.addWeighted(temp, 0.8, image, 1, 0.0)
 
-    return image_with_lines
+    return image_with_lines'''
 
-
+'''
 cascade_src = 'cars.xml'
 path = 'video/'
 cap = cv2.VideoCapture(path+'driving001.mp4')
 car_cascade = cv2.CascadeClassifier(cascade_src)
+'''
 
 # -----------------------------------------------------------------------------------------
 
 # Video Stream 반복
-while (cap.isOpened()): # (cap.isOpened()):
+while True: # (cap.isOpened()):
     #sum1 = a.examining()
     #count = count + sum1
     # 스레드 비디오 파일 스트림에서 프레임을 가져 와서 크기를 조정한 다음 Grayscale 채널로 변환
@@ -374,7 +374,7 @@ while (cap.isOpened()): # (cap.isOpened()):
             if COUNTER >= EAR_FRAMES:
                 # 졸음이 감지되면 경고 카운트 1 증가 /////////////////////////////////////// 1.2
                 # 졸음 경보 카운트가 3 이상이면 어떻게 실행될건지는 추후 회의 ////////////////////////////// 1.2
-                w_counter += 1
+                sleep_counter += 1
 
                 # 경보음이 켜져 있지 않으면 켠다
                 if not ALARM_ON:
@@ -382,9 +382,11 @@ while (cap.isOpened()): # (cap.isOpened()):
 
                     # led_builtin.write(1)
                     
-                    # 이곳이 경고 카운트(w_counter)가 증가하면 아두이노 LED or 스피커 사운드 삽입 부분이 될듯////////////////////////1.2 1.5
-                    if w_counter >= 3:
+                    # 이곳이 경고 카운트(sleep_counter)가 증가하면 아두이노 LED or 스피커 사운드 삽입 부분이 될듯////////////////////////1.2 1.5
+                    if sleep_counter >= 3:
                         # 경고음 출력되는지 문장 출력 /////////////////////////////// 1.5
+                        # notice.start()
+                        
                         cv2.putText(frame, "SOUND_ON", (300, 200),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 204), 2)
                         
@@ -394,8 +396,8 @@ while (cap.isOpened()): # (cap.isOpened()):
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 204), 2)
                 
                 # 프레임 위에 알람 표시
-                cv2.putText(frame, "WAKE UP!!", (300, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 204), 2)  # Frame_width(10, 30)
+                #cv2.putText(frame, "WAKE UP!!", (300, 30),
+                #           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 204), 2)  # Frame_width(10, 30)
 
 
         # 그렇지 않으면, 눈 종횡비가 깜박임 임계 값보다 낮지 않으므로 카운터 및 경보음을 재설정
@@ -413,8 +415,8 @@ while (cap.isOpened()): # (cap.isOpened()):
             
               
         # 경고 카운트 프레임 위 출력 ////////////////////////////////////////////////// 1.2
-        cv2.putText(frame, "Counter: {0}".format(w_counter), (300, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 204), 2)
+        '''cv2.putText(frame, "Counter: {0}".format(sleep_counter), (300, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 204), 2)'''
 
         # 올바른 눈 종횡비 임계 값 및 프레임 카운터를 디버깅하고 설정하는데 도움이되도록 계산된 눈 종횡비를 프레임에 그린다.
         cv2.putText(frame, "EAR: {:.3f}".format(EAR), (300, 320),
@@ -424,11 +426,11 @@ while (cap.isOpened()): # (cap.isOpened()):
     cv2.imshow("Frame", frame)
     key = cv2.waitKey(1) & 0xFF
 
-    '''# q를 누르면 루프 종료
+    # q를 누르면 루프 종료
     if key == ord("q"):
         break
-    '''
 # -------------------------------car--------------------------------
+'''
     ret, frame = cap.read()
 
     if (type(frame) == type(None)):
@@ -438,7 +440,7 @@ while (cap.isOpened()): # (cap.isOpened()):
     cv2.imshow('frame', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-
+'''
 
 # VidioStream 중지 및 윈도우 정리
 cv2.destroyAllWindows()

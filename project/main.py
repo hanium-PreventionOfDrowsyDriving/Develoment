@@ -1,8 +1,8 @@
+# -*- coding: utf-8 -*-
 # python main.py --haarcascade haarcascade_frontalface_default.xml --shape-predictor shape_predictor_68_face_landmarks.dat
 
 # 필요한 라이브러리 가져오기
-from imutils.video import VideoStream  # 비디오 스트림
-from imutils import face_utils  # 얼굴 감지 도구 툴
+
 import numpy as np  # 얼굴 랜드마크 위치 및 배열 필요
 import argparse  # 감지기 불러오기
 import imutils  # 얼굴 감지 관련 라이브러리
@@ -10,19 +10,22 @@ import time  # 카메라 센서 워밍
 import dlib  # 얼굴 랜드마크
 import cv2  # 얼굴 객체 인식
 import RPi.GPIO as GPIO
-import pyfirmata  # 아두이노
-#from ArduinoSerial import Ultra
-import ArduinoSerial
+import pyfirmata  
 import os, time
+import sys
+import playsound
 
-'''board=pyfirmata.Arduino('/dev/ttyUSB0')
-led_builtinMDL_questionary
-# A와 B 사이의 유클리드 거리 계산
+from imutils.video import VideoStream  # 비디오 스트림
+from imutils import face_utils  # 얼굴 감지 도구 툴
+from multiprocessing import Process
+from symbol import break_stmt
+from statistics import quantiles
+from arduino import * # 아두이노
+#from voice_processing import *
+#from questionary import *
 
-    
 def euclidean_distance(p, q):
     return np.linalg.norm(p-q)
-
 
 # 수평과 수직 눈 랜드마크 사이의 거리 비율 계산 함수
 def eye_aspect_ratio(eye):
@@ -39,7 +42,6 @@ def eye_aspect_ratio(eye):
     # 눈 종횡비 반환
     return EAR
 
-
 # 파라미터 구문 분석
 parser = argparse.ArgumentParser()
 
@@ -55,12 +57,17 @@ args = vars(parser.parse_args())
 
 # 눈의 종횡비가 깜박임을 나타내는 상수와
 # 졸음으로 간주하기 위해 눈의 종횡비 임계값 보다 낮아야 하는 연속 프레임 수에 대한 상수 정의
-EAR_THRESH = 0.23  # 눈 종횡비 임계치 값
-EAR_FRAMES = 14  # 프레임수, 값이 높을수록 감지가 늦음.
+EAR_THRESH = 0.25  # 눈 종횡비 임계치 값
+EAR_FRAMES = 8  # 프레임수, 값이 높을수록 감지가 늦음.
 
 # 프레임 카운터 초기화, 경보음 발생 여부를 나타내는데 사용되는 Bool
 COUNTER = 0
 ALARM_ON = False
+#//////////////////////////////////////////////////////////////////////////////1.2
+sleep_counter = 0 # 졸 때마다 경고 카운트
+# 졸음 감지 여부 Bool형 ////////////////////////////////////////////////////// 1.3
+EYE_DROWSINESS = False
+cheak = False
 
 # 얼굴 감지를 위한 Haar cascade 로드
 # dlib의 내장 감지기를 생성
@@ -81,7 +88,6 @@ vs = VideoStream(src=0).start()
 # 카메라 센서가 워밍업할 수 있도록 1초 동안 절전 모드
 time.sleep(1.0)
 
-
 # ------------------------------------car-------------------------------------------
 def region_of_interest(img, vertices):
     mask = np.zeros_like(img)
@@ -99,15 +105,15 @@ def get_fitline(img, f_lines):  # Finding the representative Line
 
         if len(lines.shape) != 1:
             lines = lines.reshape(lines.shape[0] * 2, 2)
-            rows, cols = img.shape[:2]
+            rows, cols = img.shape[1:7]
             output = cv2.fitLine(lines, cv2.DIST_L2, 0, 0.01, 0.01)
             vx, vy, x, y = output[0], output[1], output[2], output[3]
             # lane change error
 
             x1, y1 = int(((img.shape[0] - 1) - y) /
                          vy * vx + x), img.shape[0] - 1
-            x2, y2 = int(((img.shape[0] / 2 + 70) - y) /
-                         vy * vx + x), int(img.shape[0] / 2 + 70)
+            x2, y2 = int(((img.shape[0] / 2 + 150) - y) /
+                         vy * vx + x), int(img.shape[0] / 2 + 150)
 
             result = [x1, y1, x2, y2]
 
@@ -181,14 +187,14 @@ def process(image):
                             theta=np.pi/180,
                             threshold=50,
                             lines=np.array([]),
-                            minLineLength=20,
-                            maxLineGap=25)
+                            minLineLength=30,
+                            maxLineGap=35)
 
     line_arr = np.squeeze(lines)
 
     # Obtaining slope
     slope_degree = (np.arctan2(
-        line_arr[:, 1] - line_arr[:, 3], line_arr[:, 0] - line_arr[:, 2]) * 180) / np.pi
+        line_arr[:, 1] - line_arr[:, 3], line_arr[:, 0] - line_arr[:, 2]) * 195) / np.pi
 
     # horizontal slope limit
     line_arr = line_arr[np.abs(slope_degree) < 160]
@@ -207,7 +213,7 @@ def process(image):
     print('left', left_fit_line)
     right_fit_line = get_fitline(temp, R_lines)
     print('right', right_fit_line)
-    print(ArduinoSerial.Ultra())
+    
     if left_fit_line != None and right_fit_line != None:
         print(right_fit_line[0] - left_fit_line[0])
 
@@ -240,9 +246,9 @@ def process(image):
         center = offset(left_fit_line[0], 180, right_fit_line[0])
 
         print('center', abs(center))
-        if abs(center) > 1.5:
-            center_x = int(640 / 2.0)
-            center_y = int(360 / 2.0)
+        if abs(center) > 3:
+            center_x = int(1280 / 2.0)
+            center_y = int(720 / 2.0)
 
             thickness = 2
 
@@ -252,6 +258,7 @@ def process(image):
             cv2.putText(temp, 'Warning', location, font,
                         fontScale, (0, 0, 255), thickness)
             color = [0, 0, 255]
+            
            # pin9.write(1)
 
     if left_fit_line != None:
@@ -267,15 +274,22 @@ def process(image):
 
 cascade_src = 'cars.xml'
 path = 'video/'
-cap = cv2.VideoCapture(path + 'driving4.mp4')
+cap = cv2.VideoCapture(path + '1280_011_04s.mp4')
 car_cascade = cv2.CascadeClassifier(cascade_src)
+
+width=cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+height=cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+print('original size: %d, %d' % (width, height))
+
+#fourcc = cv2.VideoWriter_fourcc('D','I','V','X')
+#writer = cv2.VideoWriter('1280_004.mp4', fourcc, 20.0, (width, height))
 
 # -----------------------------------------------------------------------------------------
 
 # Video Stream 반복
 while (cap.isOpened()):
-    #sum1 = a.examining()
-    #count = count + sum1
+    # sum1 = a.examining()
+    # count = count + sum1
     # 스레드 비디오 파일 스트림에서 프레임을 가져 와서 크기를 조정한 다음 Grayscale 채널로 변환
     frame = vs.read()
     frame = imutils.resize(frame, width=450)
@@ -310,65 +324,136 @@ while (cap.isOpened()):
         # 왼쪽, 오른쪽 눈의 볼록한 부분을 계산후 누을 시각화
         leftEyeHull = cv2.convexHull(leftEye)
         rightEyeHull = cv2.convexHull(rightEye)
-        cv2.drawContours(frame, [leftEyeHull], -1, (255, 255, 0), 1)  # B G R
-        cv2.drawContours(frame, [rightEyeHull], -1, (255, 255, 0), 1)  # B G R
+        cv2.drawContours(frame, [leftEyeHull], -1, (0, 0, 204), 1)  # B G R
+        cv2.drawContours(frame, [rightEyeHull], -1, (0, 0, 204), 1)  # B G R
 
         # 눈의 종횡비가 깜박임 임계값 미만인지 확인하고, 그렇다면 눈 깜박임 프레임 카운터를 늘림
         if EAR < EAR_THRESH:
             COUNTER += 1
+            # 졸음 감지 여부 true로 변경 ///////////////////////////////////////////1.3
+            # 졸음이 감지되면(true) 프레임 위 감지여부 메세지 출력 ///////////////////////// 1.3
+            EYE_DROWSINESS = True
+            if EYE_DROWSINESS == True:
+                cv2.putText(frame, "Detect: O", (300, 50),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 204), 2)
 
             # 눈의 깜박임 수가 연속 깜박임 프레임 임계값 보다 큰 경우 경보음 울림
-            if COUNTER >= EAR_FRAMES:
+            if COUNTER >= EAR_FRAMES and cheak == False: ####################
+                cheak = True ######################
+
+                # 졸음이 감지되면 경고 카운트 1 증가 /////////////////////////////////////// 1.2
+                sleep_counter += 1
 
                 # 경보음이 켜져 있지 않으면 켠다
                 if not ALARM_ON:
                     ALARM_ON = True
-
-                    # led_builtin.write(1)
-
-                    # check to see if the TrafficHat buzzer should
-                    # be sounded
-                    '''if args["alarm"] > 0:
-						th.buzzer.blink(0.1, 0.1, 10,
-							background=True)'''
+                    
+                    if sleep_counter >= 3:
+                        # 경고음 출력되는지 문장 출력 /////////////////////////////// 1.5
+                        cv2.putText(frame, "SOUND_ON", (300, 200),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 204), 2)
+                        
+                # 프레임 위에 경고 표시 /////////////////////////////////////////// 1.4
+                # Fy =  y - 10 if x - 10 > 10 else y + 10
+                cv2.putText(frame, "WARNING!!", (x+15, y-20),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 204), 2)
 
                 # 프레임 위에 알람 표시
                 cv2.putText(frame, "WAKE UP!!", (300, 30),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)  # Frame_width(10, 30)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2) # Frame_width(10, 30)
 
         # 그렇지 않으면, 눈 종횡비가 깜박임 임계 값보다 낮지 않으므로 카운터 및 경보음을 재설정
         else:
+            cheak = False ####################
             COUNTER = 0
             ALARM_ON = False
-
-            # led_builtin.write(0)
-
-        # 올바른 눈 종횡비 임계 값 및 프레임 카운터를 디버깅하고 설정하는데 도움이되도록 계산된 눈 종횡비를 프레임에 그린다.
-        cv2.putText(frame, "EAR: {:.3f}".format(EAR), (300, 320),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)  # Fram_weight(300, 30)
-
+            
+            # 졸음 감지 여부(bool) False //////////////////////////////////// 1.3
+            EYE_DROWSINESS = False
+            # 졸음 감지 여부 프레임 위 출력 - 졸음을 하고 있지 않을때 ///////////////////////////////////1.3
+            if EYE_DROWSINESS == False:
+                cv2.putText(frame, "Detect: X", (300, 50),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 204), 2)
+         
+        cv2.putText(frame, "Counter: {}".format(sleep_counter), (300, 320),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 204), 2)
     # 프레임 표시
     cv2.imshow("Frame", frame)
     key = cv2.waitKey(1) & 0xFF
-
-    '''# q를 누르면 루프 종료
+    
+    # q를 누르면 루프 종료
     if key == ord("q"):
         break
-    '''
+    
+# ------------------------------ sensor --------------------------
+    # h = Aserial()
+    # j = h.counting()
+    
+    
 # -------------------------------car--------------------------------
     ret, frame = cap.read()
-
+            
     if (type(frame) == type(None)):
         break
-
     frame = process(frame)
-    cv2.imshow('frame', frame)
+    
+    if ret:
+        re = cv2.resize(frame, (640, 360))
+        cv2.imshow('frame', re)
+        
+    # writer.write(frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+'''
+if sleep_counter == 3:
+    sleep_counter = 0
+    # 초기 시작 문구 출력
+    notice.start()
+    
+    path = 'sound/'
+    playsound.playsound(path+'warning.mp3')
+    
+    #질문 랜덤 출력
+    playsound.playsound(quiz.soundpath())
+    
+    recognizer = sr.Recognizer()
+    m = sr.Microphone()
+    
+    notice.inputreq()
+    
+    while True:
+    # audio = stt.recording()
+    with sr.Microphone() as source:
+        print('1')
+        audio = sr.Recognizer().listen(source)
+    try:
+        print('2')
+        data = recognizer.recognize_google(audio, language="ko")
+        input = str(data)
+        print(input)
+    except:
+        print('a')
+        notice.inputerror()
+    
+    answer = quiz.printanswer()
+    
+    end = False
+    
+    for aword in answer:
+        if aword in input:
+            notice.correct()
+            end = True
+            break
+        
+    if end == True:
+        break
+    else:
+        notice.incorrect()
+    '''
 
 
 # VidioStream 중지 및 윈도우 정리
 cv2.destroyAllWindows()
+# writer.release()
 vs.stream.release()  # 활성된 카메라 끄기 - 실시간 찰영시 주석처리해도 됨
 vs.stop()
-
