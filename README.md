@@ -11,25 +11,12 @@ if error : bash: command no found <br>
 -> source ~/.profile <br>
 -> $ virtualenv venv
 
-# 2. 필요 라이브러리 설치
-## 2.1. opencv install guide
-<a href="https://pyimagesearch.com/2018/09/19/pip-install-opencv/">opencv 설치</a>
-
-## opencv 설치 중 오류 해결
-<a href="https://supersfel.tistory.com/257?category=1057215">opencv 설치 오류 해결</a>
-<br>
-오류 종류:
-- sudo apt install libgtk-3-dev libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5 error
-
-## 2.2. install dlib
-<a href="https://pyimagesearch.com/2017/05/01/install-dlib-raspberry-pi/">dlib 설치</a>
-
-# 3. 가상환경 가이드
-// 가상환경 사용 필요 시 참고 
+# 2. 가상환경 가이드
+// 가상환경 사용 필요 시 참고
+// 필요 없으면 바로 "3. 필요 라이브러리 설치" 부분으로 이동
 
 ## 만들어둔 가상환경 실행(CMD에서)
-- 가상환경 실행: workon <가상환경 이름>
-<br>
+- 가상환경 실행: workon <가상환경 이름> <br>
 e.g. workon cv
 
 <br>
@@ -43,6 +30,19 @@ e.g. workon cv
 ### cmd창 디렉토리 변경 -> 파이썬 코드 파일이 다른 디렉토리에 저정되어있기에
 1. $ cd Desktop/Hanium/project
 2. $ pwd
+
+# 3. 필요 라이브러리 설치
+## 3.1. opencv install guide
+<a href="https://pyimagesearch.com/2018/09/19/pip-install-opencv/">opencv 설치</a>
+
+## opencv 설치 중 오류 해결
+<a href="https://supersfel.tistory.com/257?category=1057215">opencv 설치 오류 해결</a>
+<br>
+오류 종류:
+- sudo apt install libgtk-3-dev libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5 error
+
+## 3.2. install dlib guide
+<a href="https://pyimagesearch.com/2017/05/01/install-dlib-raspberry-pi/">dlib 설치</a>
 
 <hr>
 
