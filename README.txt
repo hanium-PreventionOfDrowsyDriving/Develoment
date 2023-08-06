@@ -21,6 +21,8 @@ if occur error -> bash: workon: command not found
 
 https://blog.naver.com/PostView.nhn?blogId=rhrkdfus&logNo=221369959311
 -> 가상환경 설치 
+https://velog.io/@moey920/virtualenv%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EA%B0%80%EC%83%81%ED%99%98%EA%B2%BD-%EC%84%A4%EC%A0%95
+-> 가상환경 명령어
 
 if error : bash: command no found -> source ~/.profile
 -> $ virtualenv venv
