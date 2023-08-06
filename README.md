@@ -6,9 +6,10 @@
 <a href="https://velog.io/@moey920/virtualenv%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EA%B0%80%EC%83%81%ED%99%98%EA%B2%BD-%EC%84%A4%EC%A0%95">가상환경 명령어</a>
 
 ## workon error
-if error : bash: command no found -> source ~/.profile <br>
--> $ virtualenv venv <br>
-참고 사이트: https://github.com/davidtavarez/pwndb/issues/28
+if error : bash: command no found <br> 
+참고 사이트: https://github.com/davidtavarez/pwndb/issues/28 <br>
+-> source ~/.profile <br>
+-> $ virtualenv venv
 
 # 2. 필요 라이브러리 설치
 ## 2.1. opencv install guide
@@ -26,28 +27,28 @@ if error : bash: command no found -> source ~/.profile <br>
 // 가상환경 사용 필요 시 참고 
 
 ## 만들어둔 가상환경 실행(CMD에서)
-- 가상환경 실행 -> workon <가상환경 이름>
+- 가상환경 실행:  workon <가상환경 이름>
 <br>
 e.g. workon cv
 
-if occur error -> bash: workon: command not found 
-(1). $ source ~/.profile
-(2) $ virtualenv venv
-(3) $ workon cv
+<br>
 
+### if occur error 
+- bash: workon: command not found 
+1 $ source ~/.profile
+2 $ virtualenv venv
+3 $ workon cv
 
-# cmd창 디렉토리 변경 -> 파이썬 코드 파일이 다른 디렉토리에 저정되어있기에
-(1) $ cd Desktop/Hanium/project
-(2) $ pwd
+### cmd창 디렉토리 변경 -> 파이썬 코드 파일이 다른 디렉토리에 저정되어있기에
+1 $ cd Desktop/Hanium/project
+2 $ pwd
 
 <hr>
 
-4. 파일 실행
+# 4. 파일 실행
 python main.py --haarcascade haarcascade_frontalface_default.xml --shape-predictor shape_predictor_68_face_landmarks.dat
 
-
-**********************************************************************
-5. 파일 설명
+# 5. 파일 설명
 
 - main.py: 통합 파일(항상 최종본 유지)
 
