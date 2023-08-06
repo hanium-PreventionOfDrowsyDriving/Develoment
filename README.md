@@ -45,7 +45,7 @@ e.g. workon cv
 
 <hr>
 
-# 4. 콘솔창에서 파일 실행 방법
+# 4. 콘솔창에서 파이썬 파일 실행 방법
 python <실행할 파일명> --<얼굴인식 모델1> --<얼굴인식 모델2> <br>
 e.g.) python main.py --haarcascade haarcascade_frontalface_default.xml --shape-predictor shape_predictor_68_face_landmarks.dat
 
