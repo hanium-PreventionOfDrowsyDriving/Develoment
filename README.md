@@ -6,9 +6,9 @@
 <a href="https://velog.io/@moey920/virtualenv%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EA%B0%80%EC%83%81%ED%99%98%EA%B2%BD-%EC%84%A4%EC%A0%95">가상환경 명령어</a>
 
 ## workon error
-if error : bash: command no found -> source ~/.profile
--> $ virtualenv venv
--> https://github.com/davidtavarez/pwndb/issues/28
+if error : bash: command no found -> source ~/.profile <br>
+-> $ virtualenv venv <br>
+참고 사이트: https://github.com/davidtavarez/pwndb/issues/28
 
 # 2. 필요 라이브러리 설치
 ## 2.1. opencv install guide
@@ -16,8 +16,8 @@ if error : bash: command no found -> source ~/.profile
 
 ## opencv 설치 중 오류 해결
 <a href="https://supersfel.tistory.com/257?category=1057215">opencv 설치 오류 해결</a>
--> sudo apt install libgtk-3-dev libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5 error
--> opencv install code
+오류 종류: <br>
+- sudo apt install libgtk-3-dev libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5 error
 
 ## 2.2. install dlib
 <a href="https://pyimagesearch.com/2017/05/01/install-dlib-raspberry-pi/">dlib 설치</a>
@@ -40,10 +40,8 @@ if occur error -> bash: workon: command not found
 (1) $ cd Desktop/Hanium/project
 (2) $ pwd
 
-**********************************************************************
+<hr>
 
-
-**********************************************************************
 4. 파일 실행
 python main.py --haarcascade haarcascade_frontalface_default.xml --shape-predictor shape_predictor_68_face_landmarks.dat
 
