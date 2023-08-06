@@ -33,20 +33,21 @@ e.g. workon cv
 
 <br>
 
-### if occur error 
+### if occur error(CMD에서)
 - bash: workon: command not found 
-1 $ source ~/.profile
-2 $ virtualenv venv
-3 $ workon cv
+1. $ source ~/.profile
+2. $ virtualenv venv
+3. $ workon cv
 
 ### cmd창 디렉토리 변경 -> 파이썬 코드 파일이 다른 디렉토리에 저정되어있기에
-1 $ cd Desktop/Hanium/project
-2 $ pwd
+1. $ cd Desktop/Hanium/project
+2. $ pwd
 
 <hr>
 
-# 4. 파일 실행
-python main.py --haarcascade haarcascade_frontalface_default.xml --shape-predictor shape_predictor_68_face_landmarks.dat
+# 4. 콘솔창에서 파일 실행 방법
+python <실행할 파일명> --<얼굴인식 모델1> --<얼굴인식 모델2> <br>
+e.g.) python main.py --haarcascade haarcascade_frontalface_default.xml --shape-predictor shape_predictor_68_face_landmarks.dat
 
 # 5. 파일 설명
 
