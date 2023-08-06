@@ -5,7 +5,7 @@
 <br>
 <a href="https://velog.io/@moey920/virtualenv%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EA%B0%80%EC%83%81%ED%99%98%EA%B2%BD-%EC%84%A4%EC%A0%95">가상환경 명령어</a>
 
-## workon error
+## 가상환경 실행 에러 (workon error)
 if error : bash: command no found <br> 
 참고 사이트: https://github.com/davidtavarez/pwndb/issues/28 <br>
 -> source ~/.profile <br>
@@ -17,7 +17,8 @@ if error : bash: command no found <br>
 
 ## opencv 설치 중 오류 해결
 <a href="https://supersfel.tistory.com/257?category=1057215">opencv 설치 오류 해결</a>
-오류 종류: <br>
+<br>
+오류 종류:
 - sudo apt install libgtk-3-dev libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5 error
 
 ## 2.2. install dlib
@@ -27,7 +28,7 @@ if error : bash: command no found <br>
 // 가상환경 사용 필요 시 참고 
 
 ## 만들어둔 가상환경 실행(CMD에서)
-- 가상환경 실행:  workon <가상환경 이름>
+- 가상환경 실행: workon <가상환경 이름>
 <br>
 e.g. workon cv
 
@@ -46,7 +47,7 @@ e.g. workon cv
 <hr>
 
 # 4. 콘솔창에서 파이썬 파일 실행 방법
-python <실행할 파일명> --<얼굴인식 모델1> --<얼굴인식 모델2> <br>
+python <실행할 파일명> --<얼굴인식 모듈 1> --<얼굴인식 모듈 2> <br>
 e.g.) python main.py --haarcascade haarcascade_frontalface_default.xml --shape-predictor shape_predictor_68_face_landmarks.dat
 
 # 5. 파일 설명
