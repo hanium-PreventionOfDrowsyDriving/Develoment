@@ -1,10 +1,34 @@
-	**********************************************************************
-1. 가상환경 가이드 
 
-cmd 실행부분
-# 가상환경 실행 -> workon <가상환경 이름>
+# 1. 가상환경 설치 가이드
 
-workon cv
+<a href="https://blog.naver.com/PostView.nhn?blogId=rhrkdfus&logNo=221369959311">가상환경 설치</a>
+<br>
+<a href="https://velog.io/@moey920/virtualenv%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EA%B0%80%EC%83%81%ED%99%98%EA%B2%BD-%EC%84%A4%EC%A0%95">가상환경 명령어</a>
+
+## workon error
+if error : bash: command no found -> source ~/.profile
+-> $ virtualenv venv
+-> https://github.com/davidtavarez/pwndb/issues/28
+
+# 2. 필요 라이브러리 설치
+## 2.1. opencv install guide
+<a href="https://pyimagesearch.com/2018/09/19/pip-install-opencv/">opencv 설치</a>
+
+## opencv 설치 중 오류 해결
+<a href="https://supersfel.tistory.com/257?category=1057215">opencv 설치 오류 해결</a>
+-> sudo apt install libgtk-3-dev libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5 error
+-> opencv install code
+
+## 2.2. install dlib
+<a href="https://pyimagesearch.com/2017/05/01/install-dlib-raspberry-pi/">dlib 설치</a>
+
+# 3. 가상환경 가이드
+// 가상환경 사용 필요 시 참고 
+
+## 만들어둔 가상환경 실행(CMD에서)
+- 가상환경 실행 -> workon <가상환경 이름>
+<br>
+e.g. workon cv
 
 if occur error -> bash: workon: command not found 
 (1). $ source ~/.profile
@@ -17,36 +41,15 @@ if occur error -> bash: workon: command not found
 (2) $ pwd
 
 **********************************************************************
-2. 가상환경 및 라이브러리 설치
 
-https://blog.naver.com/PostView.nhn?blogId=rhrkdfus&logNo=221369959311
--> 가상환경 설치 
-https://velog.io/@moey920/virtualenv%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EA%B0%80%EC%83%81%ED%99%98%EA%B2%BD-%EC%84%A4%EC%A0%95
--> 가상환경 명령어
-
-if error : bash: command no found -> source ~/.profile
--> $ virtualenv venv
--> https://github.com/davidtavarez/pwndb/issues/28
-
-
-£ https://pyimagesearch.com/2018/09/19/pip-install-opencv/
-->opencv install guide
-
-https://supersfel.tistory.com/257?category=1057215
-->sudo apt install libgtk-3-dev libqtgui4 libqtwebkit4 libqt4-test python3-pyqt5 error
--> opencv install code
-
-
-https://pyimagesearch.com/2017/05/01/install-dlib-raspberry-pi/
--> install dlib
 
 **********************************************************************
-3. 파일 실행
+4. 파일 실행
 python main.py --haarcascade haarcascade_frontalface_default.xml --shape-predictor shape_predictor_68_face_landmarks.dat
 
 
 **********************************************************************
-4. 파일 설명
+5. 파일 설명
 
 - main.py: 통합 파일(항상 최종본 유지)
 
